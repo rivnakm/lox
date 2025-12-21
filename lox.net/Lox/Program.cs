@@ -1,24 +1,17 @@
-﻿using System.CommandLine;
-using System.IO.Abstractions;
+﻿using System.IO.Abstractions;
 using System.Text;
 
 namespace Lox;
 
 class Program {
-    static void Main(string[] args) {
-        var rootCommand = new RootCommand("Lox interpreter");
-
-        var fileArgument = new Argument<FileInfo>("FILE");
-        rootCommand.Arguments.Add(fileArgument);
-
-        var parseResult = rootCommand.Parse(args);
-
-        var file = parseResult.GetValue(fileArgument);
+    static int Main(string[] args) {
+        var appArgs = Arguments.Parse(args);
+        var file = appArgs.File;
         var filesystem = new FileSystem();
         if (file is not null) {
-            var fileInfo = new FileInfoWrapper(filesystem, file);
+            var fileInfo = new FileInfoWrapper(filesystem, new FileInfo(file));
             if (!fileInfo.Exists) {
-                throw new InvalidOperationException($"File '{file.FullName}' not found.");
+                throw new InvalidOperationException($"File '{fileInfo}' not found.");
             }
 
             RunFile(fileInfo);
@@ -26,6 +19,8 @@ class Program {
         else {
             RunPrompt();
         }
+
+        return (int)StatusCode.Success;
     }
 
     private static void RunFile(IFileInfo file) {
@@ -43,7 +38,8 @@ class Program {
         using var stdoutWriter = new StreamWriter(stdout, leaveOpen: true);
         using var stdinReader = new StreamReader(stdin, leaveOpen: true);
         while (true) {
-            stdoutWriter.Write("> ");
+            stdoutWriter.Write("lox > ");
+            stdoutWriter.Flush();
             var line = stdinReader.ReadLine();
             if (line is null) {
                 break;

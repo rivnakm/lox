@@ -5,28 +5,30 @@ using Shouldly;
 namespace Lox.Test;
 
 public class LexerTest {
-    public static IEnumerable<object?[]> LexerTestCases() {
-        #region TestCases
+    public class LexerTestData : TheoryData<string, Token[]> {
+        public LexerTestData() {
+            #region TestCases
 
-        yield return new object[] {
-            "print \"Hello, World!\";\n", new List<Token> {
+            this.Add(
+            "print \"Hello, World!\";\n",
+            new Token[] {
                 new(TokenType.Print, "print", null, 1),
                 new(TokenType.String, "\"Hello, World!\"", "Hello, World!", 1),
                 new(TokenType.Semicolon, ";", null, 1),
                 new(TokenType.Eof, string.Empty, null, 2)
             }
-        };
+            );
 
-        #endregion
+            #endregion
+        }
     }
 
     [Theory]
-    [MemberData(nameof(LexerTestCases))]
-    public void TestGetTokens(string source, List<Token> expected) {
+    [ClassData(typeof(LexerTestData))]
+    public void TestGetTokens(string source, Token[] expected) {
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(source));
         var tokens = Lexer.GetTokens(stream, A.Fake<IErrorContext>()).ToList();
 
         tokens.ShouldBe(expected);
     }
-
 }
