@@ -24,4 +24,8 @@
       <ProjectReference Include="..\Lox\Lox.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Collections\" />
+    </ItemGroup>
+
 </Project>

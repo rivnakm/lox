@@ -1,29 +1,35 @@
 namespace Lox;
 
-public sealed class ErrorContext : IErrorContext {
-    private readonly TextWriter _stdErrWriter;
-
+public sealed class ErrorContext : IErrorContext
+{
     public bool HasError { get; private set; }
 
-    public ErrorContext(TextWriter stdErrWriter) {
-        this._stdErrWriter = stdErrWriter;
-    }
-
-    public void Error(string message, uint line) {
+    public void Error(string message, int line)
+    {
         this.Report(line, "", message);
     }
 
-    private void Report(uint line, string where, string message) {
-        this._stdErrWriter.WriteLine($"[{line}]: Error{where}: {message}");
+    public void Error(Token token, string message)
+    {
+        if (token.Type == TokenType.Eof)
+        {
+            this.Report(token.Line, " at end", message);
+        }
+        else
+        {
+            this.Report(token.Line, $" at '{token.Lexeme}'", message);
+        }
+    }
+
+    private void Report(int line, string where, string message)
+    {
+        Console.Error.WriteLine($"[{line}]: Error{where}: {message}");
         this.HasError = true;
     }
 
-    public void Reset() {
-        this._stdErrWriter.Flush();
+    public void Reset()
+    {
+        Console.Error.Flush();
         this.HasError = false;
-    }
-
-    public void Dispose() {
-        this._stdErrWriter.Dispose();
     }
 }

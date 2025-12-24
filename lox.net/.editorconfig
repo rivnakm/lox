@@ -1,24 +1,16 @@
 root = true
 
-[*.proto]
-brace_style = end_of_line
-indent_style = space
-indent_size = 4
-
-[*.{cs,fs,razor}]
+[*.cs]
 # Microsoft .NET properties
 csharp_indent_braces = false
 csharp_brace_style = end_of_line
 csharp_new_line_before_members_in_object_initializers = false
-csharp_new_line_before_open_brace = accessors, anonymous_types, control_blocks, events, indexers, local_functions, methods, object_collection_array_initializers, properties, types
 csharp_preferred_modifier_order = public, required, protected, internal, file, new, private, static, virtual, sealed, abstract, override, extern, unsafe, volatile, readonly, async:suggestion
 csharp_preserve_single_line_blocks = true
-csharp_style_prefer_primary_constructors = false
 dotnet_style_qualification_for_event = true:suggestion
 dotnet_style_qualification_for_field = true:suggestion
 dotnet_style_qualification_for_method = true:suggestion
 dotnet_style_qualification_for_property = true:suggestion
-razor_remove_this_qualifier = false
 
 # ReSharper properties
 resharper_align_multiline_argument = true
@@ -37,7 +29,7 @@ resharper_csharp_remove_blank_lines_near_braces_in_declarations = false
 resharper_csharp_wrap_arguments_style = chop_if_long
 resharper_indent_inside_namespace = false
 resharper_indent_preprocessor_other = outdent
-resharper_instance_members_qualify_declared_in = this_class
+resharper_instance_members_qualify_declared_in = this_class, base_class
 resharper_keep_existing_attribute_arrangement = true
 resharper_max_attribute_length_for_same_line = 0
 resharper_outdent_binary_ops = true

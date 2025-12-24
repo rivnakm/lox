@@ -1,35 +1,34 @@
+using Lox.Expressions.Visitors;
+
 namespace Lox;
 
-public sealed class Interpreter : IDisposable {
-    private readonly TextWriter _stdOutWriter;
-    private readonly TextWriter _stdErrWriter;
+public sealed class Interpreter
+{
     private readonly ErrorContext _errorContext;
 
-    public Interpreter(Stream stdOut, Stream stdErr) {
-        this._stdOutWriter = new StreamWriter(stdOut);
-        this._stdErrWriter = new StreamWriter(stdErr);
-        this._errorContext = new ErrorContext(this._stdErrWriter);
+    public Interpreter()
+    {
+        this._errorContext = new ErrorContext();
     }
 
-    public void Dispose() {
-        this._stdOutWriter.Dispose();
-        this._stdErrWriter.Dispose();
-        this._errorContext.Dispose();
-    }
+    public void Exec(Stream stream, bool exitOnError = true)
+    {
+        using var reader = new StreamReader(stream);
+        var lexer = new Lexer(reader.ReadToEnd(), this._errorContext);
+        var tokens = lexer.GetTokens();
+        var parser = new Parser(tokens.ToList(), this._errorContext);
+        var expr = parser.Parse();
 
-    public void Exec(Stream stream, bool exitOnError = true) {
-        var tokens = Lexer.GetTokens(stream, this._errorContext);
-        foreach (var token in tokens) {
-            this._stdOutWriter.WriteLine(token);
-        }
-
-        this._stdOutWriter.Flush();
-
-        if (exitOnError && this._errorContext.HasError) {
+        if (exitOnError && (this._errorContext.HasError || expr is null))
+        {
             Environment.Exit((int)StatusCode.Failure);
         }
-        else {
-            this._errorContext.Reset();
+
+        if (expr is not null)
+        {
+            Console.WriteLine(new AstPrinter().Print(expr));
         }
+
+        this._errorContext.Reset();
     }
 }

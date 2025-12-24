@@ -1,7 +1,9 @@
 namespace Lox;
 
-public interface IErrorContext : IDisposable {
+public interface IErrorContext
+{
     bool HasError { get; }
-    void Error(string message, uint line);
+    void Error(string message, int line);
+    void Error(Token token, string message);
     void Reset();
 }
