@@ -1,4 +1,4 @@
-namespace Lox;
+namespace Lox.Exceptions;
 
 public class InvalidSyntaxException : Exception
 {
@@ -8,4 +8,5 @@ public class InvalidSyntaxException : Exception
     {
         this.Token = token;
     }
+
 }

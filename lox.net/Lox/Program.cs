@@ -30,7 +30,7 @@ class Program
 
     private static void RunFile(IFileInfo file)
     {
-        var interpreter = new Interpreter();
+        var interpreter = new LoxExecutor();
         using var stream = file.OpenRead();
 
         interpreter.Exec(stream);
@@ -38,7 +38,7 @@ class Program
 
     private static void RunPrompt()
     {
-        var interpreter = new Interpreter();
+        var interpreter = new LoxExecutor();
         while (true)
         {
             Console.Write("lox > ");

@@ -2,11 +2,11 @@ using Lox.Expressions.Visitors;
 
 namespace Lox;
 
-public sealed class Interpreter
+public sealed class LoxExecutor
 {
     private readonly ErrorContext _errorContext;
 
-    public Interpreter()
+    public LoxExecutor()
     {
         this._errorContext = new ErrorContext();
     }
@@ -19,6 +19,8 @@ public sealed class Interpreter
         var parser = new Parser(tokens.ToList(), this._errorContext);
         var expr = parser.Parse();
 
+        var interpreter = new Interpreter();
+
         if (exitOnError && (this._errorContext.HasError || expr is null))
         {
             Environment.Exit((int)StatusCode.Failure);
@@ -26,7 +28,7 @@ public sealed class Interpreter
 
         if (expr is not null)
         {
-            Console.WriteLine(new AstPrinter().Print(expr));
+            interpreter.Interpret(expr);
         }
 
         this._errorContext.Reset();

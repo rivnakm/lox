@@ -1,3 +1,4 @@
+using Lox.Exceptions;
 using Lox.Expressions;
 
 namespace Lox;
