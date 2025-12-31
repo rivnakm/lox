@@ -2,10 +2,8 @@ using System.Collections.Frozen;
 
 namespace Lox;
 
-public static class Keywords
-{
-    private static readonly FrozenDictionary<string, TokenType> Map = new Dictionary<string, TokenType>
-    {
+public static class Keywords {
+    private static readonly FrozenDictionary<string, TokenType> Map = new Dictionary<string, TokenType> {
         ["and"] = TokenType.And,
         ["class"] = TokenType.Class,
         ["else"] = TokenType.Else,
@@ -24,8 +22,7 @@ public static class Keywords
         ["while"] = TokenType.While
     }.ToFrozenDictionary();
 
-    public static bool TryGetTokenType(string str, out TokenType type)
-    {
+    public static bool TryGetTokenType(string str, out TokenType type) {
         return Map.TryGetValue(str, out type);
     }
 }

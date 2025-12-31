@@ -1,7 +1,6 @@
 namespace Lox;
 
-public enum TokenType
-{
+public enum TokenType {
     // Single-character tokens
     LeftParen,
     RightParen,

@@ -3,12 +3,9 @@ using Shouldly;
 
 namespace Lox.Test;
 
-public class LexerTest
-{
-    public class LexerTestData : TheoryData<string, Token[]>
-    {
-        public LexerTestData()
-        {
+public class LexerTest {
+    public class LexerTestData : TheoryData<string, Token[]> {
+        public LexerTestData() {
             #region TestCases
 
             this.Add(
@@ -27,8 +24,7 @@ public class LexerTest
 
     [Theory]
     [ClassData(typeof(LexerTestData))]
-    public void TestGetTokens(string source, Token[] expected)
-    {
+    public void TestGetTokens(string source, Token[] expected) {
         var lexer = new Lexer(source, A.Fake<IErrorContext>());
         var tokens = lexer.GetTokens().ToList();
 

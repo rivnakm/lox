@@ -2,8 +2,7 @@ using Lox.Extensions;
 
 namespace Lox;
 
-public sealed class Lexer
-{
+public sealed class Lexer {
     private readonly string _source;
     private readonly IErrorContext _errorContext;
     private readonly List<Token> _tokens;
@@ -11,17 +10,14 @@ public sealed class Lexer
     private int _current;
     private int _lineNumber = 1;
 
-    public Lexer(string source, IErrorContext errorContext)
-    {
+    public Lexer(string source, IErrorContext errorContext) {
         this._source = source;
         this._errorContext = errorContext;
         this._tokens = new List<Token>();
     }
 
-    public IList<Token> GetTokens()
-    {
-        while (!this.IsAtEnd())
-        {
+    public IList<Token> GetTokens() {
+        while (!this.IsAtEnd()) {
             this._start = this._current;
             this.ScanToken();
         }
@@ -30,16 +26,13 @@ public sealed class Lexer
         return this._tokens;
     }
 
-    private void ScanToken()
-    {
-        if (this.IsAtEnd())
-        {
+    private void ScanToken() {
+        if (this.IsAtEnd()) {
             return;
         }
 
         var ch = this.Advance();
-        switch (ch)
-        {
+        switch (ch) {
             case '(':
                 this.AddToken(TokenType.LeftParen);
                 break;
@@ -83,15 +76,12 @@ public sealed class Lexer
                 this.AddToken(this.Match('=') ? TokenType.GreaterEqual : TokenType.Greater);
                 break;
             case '/':
-                if (this.Match('/'))
-                {
-                    while (!this.IsAtEnd() && this.Peek() != '\n')
-                    {
+                if (this.Match('/')) {
+                    while (!this.IsAtEnd() && this.Peek() != '\n') {
                         this.Advance();
                     }
                 }
-                else
-                {
+                else {
                     this.AddToken(TokenType.Slash);
                 }
 
@@ -107,34 +97,30 @@ public sealed class Lexer
                 this.String();
                 break;
             default:
-                if (char.IsDigit(ch))
-                {
+                if (char.IsDigit(ch)) {
                     this.Number();
                 }
-                else if (char.IsLetter(ch))
-                {
+                else if (char.IsLetter(ch)) {
                     this.Identifier();
                 }
+                else {
+                    this._errorContext.Error($"Unexpected character '{ch}'", this._lineNumber);
+                }
 
-                this._errorContext.Error($"Unexpected character '{ch}'", this._lineNumber);
                 break;
         }
     }
 
-    private void String()
-    {
-        while (this.Peek() != '"' && !this.IsAtEnd())
-        {
-            if (this.Peek() == '\n')
-            {
+    private void String() {
+        while (this.Peek() != '"' && !this.IsAtEnd()) {
+            if (this.Peek() == '\n') {
                 this._lineNumber++;
             }
 
             this.Advance();
         }
 
-        if (this.IsAtEnd())
-        {
+        if (this.IsAtEnd()) {
             this._errorContext.Error("Unterminated string.", this._lineNumber);
             return;
         }
@@ -144,20 +130,16 @@ public sealed class Lexer
         this.AddToken(TokenType.String, str);
     }
 
-    private void Number()
-    {
-        while (char.IsDigit(this.Peek()))
-        {
+    private void Number() {
+        while (char.IsDigit(this.Peek())) {
             this.Advance();
         }
 
-        if (this.Peek() == '.' && char.IsDigit(this.PeekNext()))
-        {
+        if (this.Peek() == '.' && char.IsDigit(this.PeekNext())) {
             // consume the `.`
             this.Advance();
 
-            while (char.IsDigit(this.Peek()))
-            {
+            while (char.IsDigit(this.Peek())) {
                 this.Advance();
             }
         }
@@ -166,16 +148,13 @@ public sealed class Lexer
         this.AddToken(TokenType.Number, value);
     }
 
-    private void Identifier()
-    {
-        while (char.IsLetterOrDigit(this.Peek()))
-        {
+    private void Identifier() {
+        while (char.IsLetterOrDigit(this.Peek())) {
             this.Advance();
         }
 
         var text = this.GetLexeme();
-        if (Keywords.TryGetTokenType(text, out var tokenType))
-        {
+        if (Keywords.TryGetTokenType(text, out var tokenType)) {
             this.AddToken(tokenType);
             return;
         }
@@ -183,25 +162,20 @@ public sealed class Lexer
         this.AddToken(TokenType.Identifier);
     }
 
-    private char Advance()
-    {
+    private char Advance() {
         return this._source[this._current++];
     }
 
-    private char Peek()
-    {
+    private char Peek() {
         return this.IsAtEnd() ? '\0' : this._source[this._current];
     }
 
-    private char PeekNext()
-    {
+    private char PeekNext() {
         return (this._current + 1 >= this._source.Length) ? '\0' : this._source[this._current + 1];
     }
 
-    private bool Match(char expected)
-    {
-        if (this.Peek() != expected)
-        {
+    private bool Match(char expected) {
+        if (this.Peek() != expected) {
             return false;
         }
 
@@ -209,18 +183,15 @@ public sealed class Lexer
         return true;
     }
 
-    private string GetLexeme()
-    {
+    private string GetLexeme() {
         return this._source.Substring(this._start, this._current - this._start);
     }
 
-    private void AddToken(TokenType type, object? value = null)
-    {
+    private void AddToken(TokenType type, object? value = null) {
         this._tokens.Add(new Token(type, this.GetLexeme(), value, this._lineNumber));
     }
 
-    private bool IsAtEnd()
-    {
+    private bool IsAtEnd() {
         return this._current >= this._source.Length;
     }
 }

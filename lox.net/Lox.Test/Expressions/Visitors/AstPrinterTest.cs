@@ -4,12 +4,9 @@ using Shouldly;
 
 namespace Lox.Test.Expressions.Visitors;
 
-public class AstPrinterTest
-{
-    public class AstPrinterTestData : TheoryData<Expression, string>
-    {
-        public AstPrinterTestData()
-        {
+public class AstPrinterTest {
+    public class AstPrinterTestData : TheoryData<Expression, string> {
+        public AstPrinterTestData() {
             #region TestCases
 
             this.Add(new Literal("hello"), "hello");
@@ -29,8 +26,7 @@ public class AstPrinterTest
 
     [Theory]
     [ClassData(typeof(AstPrinterTestData))]
-    public void TestPrint(Expression expression, string expected)
-    {
+    public void TestPrint(Expression expression, string expected) {
         var printer = new AstPrinter();
         var result = printer.Print(expression);
 

@@ -3,6 +3,7 @@ root = true
 [*.cs]
 # Microsoft .NET properties
 csharp_indent_braces = false
+csharp_new_line_before_open_brace = none
 csharp_brace_style = end_of_line
 csharp_new_line_before_members_in_object_initializers = false
 csharp_preferred_modifier_order = public, required, protected, internal, file, new, private, static, virtual, sealed, abstract, override, extern, unsafe, volatile, readonly, async:suggestion
