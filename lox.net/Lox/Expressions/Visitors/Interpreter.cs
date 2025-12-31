@@ -1,18 +1,20 @@
 using Lox.Exceptions;
+using Lox.Utility;
 
 namespace Lox.Expressions.Visitors;
 
-public class Interpreter : IVisitor<Value> {
+public class Interpreter : IVisitor<object?> {
     public void Interpret(Expression expr) {
         try {
             var value = this.Evaluate(expr);
-            Console.WriteLine(value.ToString());
+            Console.WriteLine(InterpreterValueUtility.Format(value));
         }
         catch (RuntimeException ex) {
             Console.Error.WriteLine(ex.Message);
         }
     }
-    public Value Visit(BinaryExpression binExpr) {
+
+    public object? Visit(BinaryExpression binExpr) {
         var left = this.Evaluate(binExpr.Left);
         var right = this.Evaluate(binExpr.Right);
 
@@ -20,54 +22,70 @@ public class Interpreter : IVisitor<Value> {
         // happened in source code. Not what we want
         switch (binExpr.Operator.Type) {
             case TokenType.Greater:
-                return left > right;
+                InterpreterValueUtility.CheckNumbers(binExpr.Operator, left, right);
+                return (double)left! > (double)right!;
             case TokenType.GreaterEqual:
-                return left >= right;
+                InterpreterValueUtility.CheckNumbers(binExpr.Operator, left, right);
+                return (double)left! >= (double)right!;
             case TokenType.Less:
-                return left < right;
+                InterpreterValueUtility.CheckNumbers(binExpr.Operator, left, right);
+                return (double)left! < (double)right!;
             case TokenType.LessEqual:
-                return left <= right;
+                InterpreterValueUtility.CheckNumbers(binExpr.Operator, left, right);
+                return (double)left! <= (double)right!;
             case TokenType.BangEqual:
-                return left != right;
+                return !InterpreterValueUtility.AreEqual(left, right);
             case TokenType.EqualEqual:
-                return left == right;
+                return InterpreterValueUtility.AreEqual(left, right);
             case TokenType.Minus:
-                return left - right;
+                InterpreterValueUtility.CheckNumbers(binExpr.Operator, left, right);
+                return (double)left! - (double)right!;
             case TokenType.Slash:
-                return left / right;
+                InterpreterValueUtility.CheckNumbers(binExpr.Operator, left, right);
+                return (double)left! / (double)right!;
             case TokenType.Star:
-                return left * right;
+                InterpreterValueUtility.CheckNumbers(binExpr.Operator, left, right);
+                return (double)left! * (double)right!;
             case TokenType.Plus:
-                return left + right;
+                if (left is string leftStr && right is string rightStr) {
+                    return leftStr + rightStr;
+                }
+
+                if (left is double leftDouble && right is double rightDouble) {
+                    return leftDouble + rightDouble;
+                }
+
+                throw new InvalidTypeException(binExpr.Operator, "Operands must be two numbers or two strings");
         }
 
         // unreachable
         throw new InvalidOperationException();
     }
 
-    public Value Visit(Grouping grouping) {
+    public object? Visit(Grouping grouping) {
         return this.Evaluate(grouping.Expression);
     }
 
-    public Value Visit(Literal literal) {
-        return new Value(literal.Value);
+    public object? Visit(Literal literal) {
+        return literal.Value;
     }
 
-    public Value Visit(UnaryExpression unaryExpr) {
+    public object? Visit(UnaryExpression unaryExpr) {
         var right = this.Evaluate(unaryExpr.Right);
 
         switch (unaryExpr.Operator.Type) {
             case TokenType.Bang:
-                return !right;
+                return !InterpreterValueUtility.IsTruthy(right);
             case TokenType.Minus:
-                return -right;
+                InterpreterValueUtility.CheckNumber(unaryExpr.Operator, right);
+                return -((double)right!);
         }
 
         // unreachable
         throw new InvalidOperationException();
     }
 
-    private Value Evaluate(Expression expr) {
+    private object? Evaluate(Expression expr) {
         return expr.Accept(this);
     }
 }
