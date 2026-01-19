@@ -1,5 +1,3 @@
-using Lox.Expressions.Visitors;
-
 namespace Lox;
 
 public sealed class LoxExecutor {
@@ -18,13 +16,11 @@ public sealed class LoxExecutor {
 
         var interpreter = new Interpreter();
 
-        if (exitOnError && (this._errorContext.HasError || expr is null)) {
-            Environment.Exit((int)StatusCode.Failure);
+        if (exitOnError && (this._errorContext.HasError)) {
+            System.Environment.Exit((int)StatusCode.Failure);
         }
 
-        if (expr is not null) {
-            interpreter.Interpret(expr);
-        }
+        interpreter.Interpret(expr);
 
         this._errorContext.Reset();
     }

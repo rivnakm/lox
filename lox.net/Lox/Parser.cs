@@ -1,5 +1,6 @@
 using Lox.Exceptions;
 using Lox.Expressions;
+using Lox.Statements;
 
 namespace Lox;
 
@@ -14,17 +15,98 @@ public sealed class Parser {
         this._current = 0;
     }
 
-    public Expression? Parse() {
+    public IEnumerable<Statement> Parse() {
+        while (!this.IsAtEnd()) {
+            var decl = this.Declaration();
+            if (decl is not null) {
+                yield return decl;
+            }
+        }
+    }
+
+    private Statement? Declaration() {
         try {
-            return this.Expression();
+            if (this.Match(TokenType.Var)) {
+                return this.VarDeclaration();
+            }
+
+            return this.Statement();
         }
         catch (InvalidSyntaxException) {
+            this.Synchronize();
             return null;
         }
     }
 
+    private VarStatement VarDeclaration() {
+        var name = this.Consume(TokenType.Identifier, "Expect variable name.");
+
+        Expression? initializer = null;
+        if (this.Match(TokenType.Equal)) {
+            initializer = this.Expression();
+        }
+
+        this.Consume(TokenType.Semicolon, "Expect ';' after variable declaratio.");
+        return new VarStatement(name, initializer);
+    }
+
+    private Statement Statement() {
+        if (this.Match(TokenType.Print)) {
+            return this.PrintStatement();
+        }
+
+        if (this.Match(TokenType.LeftBrace)) {
+            return new BlockStatement(this.Block());
+        }
+
+        return this.ExpressionStatement();
+    }
+
+    private PrintStatement PrintStatement() {
+        var expr = this.Expression();
+        this.Consume(TokenType.Semicolon, "Expect ';' after expression.");
+        return new PrintStatement(expr);
+    }
+
+    private ExpressionStatement ExpressionStatement() {
+        var expr = this.Expression();
+        this.Consume(TokenType.Semicolon, "Expect ';' after expression.");
+        return new ExpressionStatement(expr);
+    }
+
+    private List<Statement> Block() {
+        var statements = new List<Statement>();
+
+        while (!this.Check(TokenType.RightBrace) && !this.IsAtEnd()) {
+            var decl = this.Declaration();
+            if (decl is not null) {
+                statements.Add(decl);
+            }
+        }
+
+        this.Consume(TokenType.RightBrace, "Expect '}' after block.");
+        return statements;
+    }
+
     private Expression Expression() {
-        return this.Equality();
+        return this.Assignment();
+    }
+
+    private Expression Assignment() {
+        var expr = this.Equality();
+
+        if (this.Match(TokenType.Equal)) {
+            var equals = this.Previous();
+            var value = this.Assignment();
+
+            if (expr is Variable varExpr) {
+                return new Assignment(varExpr.Name, value);
+            }
+
+            this.Error(equals, "Invalid assignment target.");
+        }
+
+        return expr;
     }
 
     private Expression Equality() {
@@ -102,6 +184,10 @@ public sealed class Parser {
             return new Literal(this.Previous().Value);
         }
 
+        if (this.Match(TokenType.Identifier)) {
+            return new Variable(this.Previous());
+        }
+
         if (this.Match(TokenType.LeftParen)) {
             var expr = this.Expression();
             this.Consume(TokenType.RightParen, "Expect ')' after expression.");
@@ -113,7 +199,7 @@ public sealed class Parser {
 
     private bool Match(params TokenType[] tokenTypes) {
         // ReSharper disable once InvertIf
-        if (tokenTypes.Any(tokenType => this.Check(tokenType))) {
+        if (tokenTypes.Any(this.Check)) {
             this.Advance();
             return true;
         }
