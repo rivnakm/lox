@@ -3,9 +3,16 @@ using Lox.Statements.Visitors;
 
 namespace Lox.Statements;
 
-public record VarStatement(Token Name, Expression? Initializer) : Statement {
+public class VarStatement : IStatement {
+    public Token Name { get; }
+    public IExpression? Initializer { get; }
 
-    public override T Accept<T>(IVisitor<T> visitor) {
+    public VarStatement(Token name, IExpression? initializer) {
+        this.Name = name;
+        this.Initializer = initializer;
+    }
+
+    public T Accept<T>(IVisitor<T> visitor) {
         return visitor.Visit(this);
     }
 }

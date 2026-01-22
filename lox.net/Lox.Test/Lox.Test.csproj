@@ -8,12 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="coverlet.collector" />
-        <PackageReference Include="FakeItEasy" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" />
-        <PackageReference Include="Shouldly" />
-        <PackageReference Include="xunit" />
-        <PackageReference Include="xunit.runner.visualstudio" />
+        <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="FakeItEasy"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="ReflectionMagic" />
+        <PackageReference Include="Shouldly"/>
+        <PackageReference Include="xunit"/>
+        <PackageReference Include="xunit.runner.visualstudio"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -21,11 +22,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Lox\Lox.csproj" />
+        <ProjectReference Include="..\Lox\Lox.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Collections\" />
+        <Folder Include="Collections\"/>
     </ItemGroup>
 
 </Project>

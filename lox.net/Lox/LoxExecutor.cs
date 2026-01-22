@@ -12,15 +12,22 @@ public sealed class LoxExecutor {
         var lexer = new Lexer(reader.ReadToEnd(), this._errorContext);
         var tokens = lexer.GetTokens();
         var parser = new Parser(tokens.ToList(), this._errorContext);
-        var expr = parser.Parse();
+        var statements = parser.Parse().ToList();
 
         var interpreter = new Interpreter();
 
-        if (exitOnError && (this._errorContext.HasError)) {
-            System.Environment.Exit((int)StatusCode.Failure);
+        if (exitOnError && this._errorContext.HasError) {
+            Environment.Exit((int)StatusCode.Failure);
         }
 
-        interpreter.Interpret(expr);
+        var resolver = new Resolver(interpreter, this._errorContext);
+        resolver.Resolve(statements);
+
+        if (exitOnError && this._errorContext.HasError) {
+            Environment.Exit((int)StatusCode.Failure);
+        }
+
+        interpreter.Interpret(statements);
 
         this._errorContext.Reset();
     }

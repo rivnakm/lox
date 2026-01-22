@@ -4,6 +4,16 @@ using Shouldly;
 namespace Lox.Test;
 
 public class LexerTest {
+
+    [Theory]
+    [ClassData(typeof(LexerTestData))]
+    public void TestGetTokens(string source, Token[] expected) {
+        var lexer = new Lexer(source, A.Fake<IErrorContext>());
+        var tokens = lexer.GetTokens().ToList();
+
+        tokens.ShouldBe(expected);
+    }
+
     public class LexerTestData : TheoryData<string, Token[]> {
         public LexerTestData() {
             #region TestCases
@@ -20,14 +30,5 @@ public class LexerTest {
 
             #endregion
         }
-    }
-
-    [Theory]
-    [ClassData(typeof(LexerTestData))]
-    public void TestGetTokens(string source, Token[] expected) {
-        var lexer = new Lexer(source, A.Fake<IErrorContext>());
-        var tokens = lexer.GetTokens().ToList();
-
-        tokens.ShouldBe(expected);
     }
 }

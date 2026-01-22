@@ -3,15 +3,15 @@ using System.Text;
 
 namespace Lox;
 
-class Program {
-    static int Main(string[] args) {
+internal class Program {
+    private static int Main(string[] args) {
         var appArgs = Arguments.Parse(args);
         var file = appArgs.File;
         var filesystem = new FileSystem();
         if (file is not null) {
             var fileInfo = new FileInfoWrapper(filesystem, new FileInfo(file));
             if (!fileInfo.Exists) {
-                throw new InvalidOperationException($"File '{fileInfo}' not found.");
+                throw new InvalidOperationException($"File '{fileInfo}' not found");
             }
 
             RunFile(fileInfo);

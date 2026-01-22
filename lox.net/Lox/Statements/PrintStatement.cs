@@ -3,8 +3,14 @@ using Lox.Statements.Visitors;
 
 namespace Lox.Statements;
 
-public record PrintStatement(Expression Expression) : Statement {
-    public override T Accept<T>(IVisitor<T> visitor) {
+public class PrintStatement : IStatement {
+    public IExpression Expression { get; }
+
+    public PrintStatement(IExpression expression) {
+        this.Expression = expression;
+    }
+
+    public T Accept<T>(IVisitor<T> visitor) {
         return visitor.Visit(this);
     }
 }

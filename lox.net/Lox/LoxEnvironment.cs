@@ -1,43 +1,63 @@
+using System.Diagnostics;
 using Lox.Exceptions;
 
 namespace Lox;
 
 public class LoxEnvironment {
+    public LoxEnvironment? Parent { get; }
     private readonly Dictionary<string, object?> _variables = new();
-    private readonly LoxEnvironment? _parent;
 
     public LoxEnvironment(LoxEnvironment? parent = null) {
-        this._parent = parent;
+        this.Parent = parent;
     }
 
-    public object? this[Token name] => this.Get(name);
+    public object? this[string name] => this.Get(name);
 
-    public object? Get(Token name) {
-        if (this._variables.TryGetValue(name.Lexeme, out var value)) {
+    public object? Get(string name) {
+        if (this._variables.TryGetValue(name, out var value)) {
             return value;
         }
 
-        if (this._parent is not null) {
-            return this._parent[name];
+        if (this.Parent is not null) {
+            return this.Parent.Get(name);
         }
 
-        throw new UndefinedVariableException($"Undefined variable '{name.Lexeme}'");
+        throw new UndefinedVariableException($"Undefined variable '{name}'");
     }
 
-    public void Define(Token name, object? value) {
-        _ = this._variables.TryAdd(name.Lexeme, value);
+    public void Define(string name, object? value) {
+        this._variables[name] = value;
     }
 
-    public void Assign(Token name, object? value) {
-        if (this._variables.ContainsKey(name.Lexeme)) {
-            this._variables[name.Lexeme] = value;
-        }
-
-        if (this._parent is not null) {
-            this._parent.Assign(name, value);
+    public void Assign(string name, object? value) {
+        if (this._variables.ContainsKey(name)) {
+            this._variables[name] = value;
             return;
         }
 
-        throw new UndefinedVariableException($"Undefined variable '{name.Lexeme}'");
+        if (this.Parent is not null) {
+            this.Parent.Assign(name, value);
+            return;
+        }
+
+        throw new UndefinedVariableException($"Undefined variable '{name}'");
+    }
+
+    public object? GetAt(int distance, string name) {
+        return this.Ancestor(distance)._variables.GetValueOrDefault(name);
+    }
+
+    public void AssignAt(int distance, string name, object? value) {
+        this.Ancestor(distance)._variables[name] = value;
+    }
+
+    private LoxEnvironment Ancestor(int distance) {
+        var environment = this;
+        for (var i = 0; i < distance; i++) {
+            Debug.Assert(environment.Parent is not null);
+            environment = environment.Parent;
+        }
+
+        return environment;
     }
 }

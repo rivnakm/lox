@@ -3,12 +3,12 @@ using Lox.Extensions;
 namespace Lox;
 
 public sealed class Lexer {
-    private readonly string _source;
     private readonly IErrorContext _errorContext;
+    private readonly string _source;
     private readonly List<Token> _tokens;
-    private int _start;
     private int _current;
     private int _lineNumber = 1;
+    private int _start;
 
     public Lexer(string source, IErrorContext errorContext) {
         this._source = source;
@@ -121,7 +121,7 @@ public sealed class Lexer {
         }
 
         if (this.IsAtEnd()) {
-            this._errorContext.Error("Unterminated string.", this._lineNumber);
+            this._errorContext.Error("Unterminated string", this._lineNumber);
             return;
         }
 
@@ -149,7 +149,7 @@ public sealed class Lexer {
     }
 
     private void Identifier() {
-        while (char.IsLetterOrDigit(this.Peek())) {
+        while (IsIdentifier(this.Peek())) {
             this.Advance();
         }
 
@@ -171,7 +171,7 @@ public sealed class Lexer {
     }
 
     private char PeekNext() {
-        return (this._current + 1 >= this._source.Length) ? '\0' : this._source[this._current + 1];
+        return this._current + 1 >= this._source.Length ? '\0' : this._source[this._current + 1];
     }
 
     private bool Match(char expected) {
@@ -193,5 +193,9 @@ public sealed class Lexer {
 
     private bool IsAtEnd() {
         return this._current >= this._source.Length;
+    }
+
+    private static bool IsIdentifier(char ch) {
+        return char.IsLetterOrDigit(ch) || ch == '_';
     }
 }

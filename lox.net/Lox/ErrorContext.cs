@@ -16,13 +16,13 @@ public sealed class ErrorContext : IErrorContext {
         }
     }
 
-    private void Report(int line, string where, string message) {
-        Console.Error.WriteLine($"[{line}]: Error{where}: {message}");
-        this.HasError = true;
-    }
-
     public void Reset() {
         Console.Error.Flush();
         this.HasError = false;
+    }
+
+    private void Report(int line, string where, string message) {
+        Console.Error.WriteLine($"[{line}]: Error{where}: {message}");
+        this.HasError = true;
     }
 }

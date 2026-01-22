@@ -8,13 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Clap.Net" />
-      <PackageReference Include="TestableIO.System.IO.Abstractions" />
-      <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Extensions\" />
+        <PackageReference Include="Clap.Net"/>
+        <PackageReference Include="TestableIO.System.IO.Abstractions"/>
+        <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers"/>
     </ItemGroup>
 
 </Project>

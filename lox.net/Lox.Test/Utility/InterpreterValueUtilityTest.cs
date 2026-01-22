@@ -57,4 +57,12 @@ public class InterpreterValueUtilityTest {
         var check = () => InterpreterValueUtility.CheckNumbers(A.Dummy<Token>(), left, right);
         check.ShouldThrow<InvalidTypeException>();
     }
+
+    [Theory]
+    [InlineData(null, "nil")]
+    [InlineData(true, "true")]
+    [InlineData(false, "false")]
+    public void Format(object? value, string expected) {
+        InterpreterValueUtility.Format(value).ShouldBe(expected);
+    }
 }

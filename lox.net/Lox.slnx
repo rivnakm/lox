@@ -1,8 +1,9 @@
 <Solution>
-  <Folder Name="/Solution Items/">
-    <File Path=".editorconfig" />
-    <File Path="Directory.Packages.props" />
-  </Folder>
-  <Project Path="Lox.Test/Lox.Test.csproj" />
-  <Project Path="Lox/Lox.csproj" />
+    <Folder Name="/Solution Items/">
+        <File Path="..\test.py" />
+        <File Path=".editorconfig" />
+        <File Path="Directory.Packages.props" />
+    </Folder>
+    <Project Path="Lox.Test/Lox.Test.csproj" />
+    <Project Path="Lox/Lox.csproj" />
 </Solution>

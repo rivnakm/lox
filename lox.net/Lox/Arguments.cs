@@ -4,6 +4,6 @@ namespace Lox;
 
 [Command(Name = "lox")]
 public partial class Arguments {
-    [Arg()]
+    [Arg]
     public string? File { get; init; }
 }
